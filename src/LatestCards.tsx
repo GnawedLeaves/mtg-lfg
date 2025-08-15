@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Typography,
-  Spin,
-  Button,
-  message,
-  Modal,
-  List,
-  Pagination,
-} from "antd";
+import { Typography, Spin, Modal, List, Pagination } from "antd";
 import styled from "styled-components";
 import CardFilters, { FilterState } from "./components/CardFilters";
+import CardDisplay, { MTGCard } from "./components/CardDisplay";
 
 const { Title } = Typography;
 
@@ -23,153 +15,6 @@ const LatestContainer = styled.div`
     padding: 4px;
   }
 `;
-
-const CardImage = styled.img`
-  max-width: 150px;
-  width: 100%;
-  height: auto;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: transform 0.2s;
-
-  @media (max-width: 768px) {
-    max-width: 180px;
-    margin-bottom: 8px;
-  }
-
-  @media (max-width: 480px) {
-    max-width: 200px;
-    margin-bottom: 6px;
-  }
-
-  &:hover {
-    transform: scale(1.05);
-  }
-`;
-
-const StyledCard = styled(Card)`
-  height: 100%;
-
-  .ant-card-body {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 16px;
-
-    @media (max-width: 768px) {
-      padding: 12px;
-    }
-
-    @media (max-width: 480px) {
-      padding: 8px;
-    }
-  }
-
-  .ant-card-head {
-    @media (max-width: 480px) {
-      padding: 8px 12px;
-      min-height: 40px;
-    }
-  }
-
-  .ant-card-head-title {
-    @media (max-width: 480px) {
-      font-size: 14px;
-      line-height: 1.2;
-    }
-  }
-`;
-
-const CardText = styled.div`
-  margin-top: auto;
-
-  p {
-    margin-bottom: 8px;
-    font-size: 14px;
-    line-height: 1.4;
-
-    @media (max-width: 768px) {
-      margin-bottom: 6px;
-      font-size: 13px;
-      line-height: 1.3;
-    }
-
-    @media (max-width: 480px) {
-      margin-bottom: 4px;
-      font-size: 12px;
-      line-height: 1.2;
-    }
-  }
-
-  strong {
-    @media (max-width: 480px) {
-      font-size: 12px;
-    }
-  }
-`;
-
-const ExpandableText: React.FC<{ text: string; maxLength?: number }> = ({
-  text,
-  maxLength = 80,
-}) => {
-  const [expanded, setExpanded] = useState(false);
-
-  if (!text || text.length <= maxLength) {
-    return <span>{text}</span>;
-  }
-
-  return (
-    <span>
-      {expanded ? text : `${text.substring(0, maxLength)}...`}
-      <Button
-        type="link"
-        size="small"
-        onClick={() => setExpanded(!expanded)}
-        style={{ padding: 0, marginLeft: 4 }}
-      >
-        {expanded ? "Show less" : "See more"}
-      </Button>
-    </span>
-  );
-};
-
-const ControlsContainer = styled.div`
-  margin-bottom: 16px;
-  padding: 12px;
-  background: #fafafa;
-  border-radius: 8px;
-  border: 1px solid #d9d9d9;
-
-  @media (max-width: 768px) {
-    margin-bottom: 12px;
-    padding: 8px;
-    border-radius: 6px;
-  }
-
-  @media (max-width: 480px) {
-    margin-bottom: 8px;
-    padding: 6px;
-  }
-`;
-
-interface MTGCard {
-  id: string;
-  name: string;
-  image_uris?: {
-    normal?: string;
-    small?: string;
-  };
-  type_line?: string;
-  set_name?: string;
-  mana_cost?: string;
-  rarity?: string;
-  oracle_text?: string;
-  prices?: {
-    usd?: string;
-    eur?: string;
-  };
-  released_at?: string;
-}
 
 const LatestCards: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -185,6 +30,7 @@ const LatestCards: React.FC = () => {
   } | null>(null);
   const [colorFilters, setColorFilters] = useState<string[]>([]);
   const [rarityFilter, setRarityFilter] = useState("all");
+  const [setFilter, setSetFilter] = useState("all");
   const [totalCards, setTotalCards] = useState(0);
 
   const colorOptions = [
@@ -271,12 +117,31 @@ const LatestCards: React.FC = () => {
     setCurrentPage(1); // Reset to first page when changing rarity filter
   };
 
+  const handleSetFilterChange = (value: string) => {
+    setSetFilter(value);
+    setCurrentPage(1); // Reset to first page when changing set filter
+  };
+
   const handleResetFilters = () => {
     setSearchTerm("");
     setSortOption("date-desc");
     setColorFilters([]);
     setRarityFilter("all");
+    setSetFilter("all");
     setCurrentPage(1);
+  };
+
+  const getUniqueSetNames = () => {
+    const uniqueSets = Array.from(
+      new Set(cards.map((card) => card.set_name).filter(Boolean))
+    ).sort();
+    return [
+      { value: "all", label: "All Sets" },
+      ...uniqueSets.map((setName) => ({
+        value: setName!,
+        label: setName!,
+      })),
+    ];
   };
 
   const getFilteredAndSortedCards = () => {
@@ -330,6 +195,13 @@ const LatestCards: React.FC = () => {
     if (rarityFilter && rarityFilter !== "all") {
       filteredCards = filteredCards.filter(
         (card) => card.rarity?.toLowerCase() === rarityFilter.toLowerCase()
+      );
+    }
+
+    // Filter by set
+    if (setFilter && setFilter !== "all") {
+      filteredCards = filteredCards.filter(
+        (card) => card.set_name === setFilter
       );
     }
 
@@ -403,7 +275,7 @@ const LatestCards: React.FC = () => {
 
   return (
     <LatestContainer>
-      <Title level={2}>Latest MTG Cards</Title>
+      <Title level={2}>Latest MTG Cards ({totalCards} cards)</Title>
       <p style={{ marginBottom: 24, color: "#666" }}>
         Discover the newest Magic: The Gathering cards released in the last 6
         months
@@ -415,6 +287,7 @@ const LatestCards: React.FC = () => {
           sortOption,
           colorFilters,
           rarityFilter,
+          setFilter,
           currentPage,
           pageSize,
         }}
@@ -422,10 +295,12 @@ const LatestCards: React.FC = () => {
         onSortChange={handleSortChange}
         onColorFilterChange={handleColorFilterChange}
         onRarityFilterChange={handleRarityFilterChange}
+        onSetFilterChange={handleSetFilterChange}
         onPageChange={(page: number) => setCurrentPage(page)}
         onPageSizeChange={handlePageSizeChange}
         onResetFilters={handleResetFilters}
         totalCards={filteredCards.length}
+        setOptions={getUniqueSetNames()}
         searchPlaceholder="Search latest cards..."
       />
 
@@ -442,51 +317,12 @@ const LatestCards: React.FC = () => {
         dataSource={displayCards}
         renderItem={(card) => (
           <List.Item>
-            <StyledCard title={card.name} size="small">
-              {card.image_uris?.normal && (
-                <CardImage
-                  src={card.image_uris.normal}
-                  alt={card.name}
-                  onClick={() =>
-                    handleImageClick(card.image_uris!.normal!, card.name)
-                  }
-                />
-              )}
-              <CardText>
-                <p>
-                  <strong>Set:</strong> {card.set_name}
-                </p>
-                <p>
-                  <strong>Type:</strong> {card.type_line}
-                </p>
-                <p>
-                  <strong>Mana Cost:</strong> {card.mana_cost}
-                </p>
-                <p>
-                  <strong>Rarity:</strong> {card.rarity}
-                </p>
-                {card.released_at && (
-                  <p>
-                    <strong>Released:</strong>{" "}
-                    {new Date(card.released_at).toLocaleDateString()}
-                  </p>
-                )}
-                {card.oracle_text && (
-                  <p>
-                    <strong>Text:</strong>{" "}
-                    <ExpandableText text={card.oracle_text} maxLength={80} />
-                  </p>
-                )}
-                {card.prices && (card.prices.usd || card.prices.eur) && (
-                  <p>
-                    <strong>Price:</strong>{" "}
-                    {card.prices.usd && `$${card.prices.usd}`}
-                    {card.prices.usd && card.prices.eur && " / "}
-                    {card.prices.eur && `€${card.prices.eur}`}
-                  </p>
-                )}
-              </CardText>
-            </StyledCard>
+            <CardDisplay
+              card={card}
+              onImageClick={handleImageClick}
+              showSet={true}
+              showReleaseDate={true}
+            />
           </List.Item>
         )}
       />

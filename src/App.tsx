@@ -23,12 +23,12 @@ function App() {
   const currentPath = location.pathname;
 
   const getSelectedKey = () => {
-    if (currentPath === "/") return ["expansions"];
+    if (currentPath === "/") return ["latest"];
     if (currentPath === "/search") return ["search"];
     if (currentPath === "/popular") return ["popular"];
     if (currentPath === "/latest") return ["latest"];
     if (currentPath === "/expansions") return ["expansions"];
-    return ["expansions"];
+    return ["latest"];
   };
 
   return (
@@ -36,11 +36,11 @@ function App() {
       <Layout>
         <Header>
           <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKey()}>
-            <Menu.Item key="expansions">
-              <Link to="/">Expansion Sets</Link>
-            </Menu.Item>
             <Menu.Item key="latest">
-              <Link to="/latest">Latest Cards</Link>
+              <Link to="/">Latest Cards</Link>
+            </Menu.Item>
+            <Menu.Item key="expansions">
+              <Link to="/expansions">Expansion Sets</Link>
             </Menu.Item>
             <Menu.Item key="search">
               <Link to="/search">Card Search</Link>
@@ -52,7 +52,7 @@ function App() {
         </Header>
         <Content style={{ padding: "24px" }}>
           <Routes>
-            <Route path="/" element={<ExpansionSets />} />
+            <Route path="/" element={<LatestCards />} />
             <Route path="/latest" element={<LatestCards />} />
             <Route path="/search" element={<CardSearch />} />
             <Route path="/popular" element={<PopularCards />} />

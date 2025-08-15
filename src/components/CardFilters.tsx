@@ -40,6 +40,7 @@ export interface FilterState {
   sortOption: string;
   colorFilters: string[];
   rarityFilter: string;
+  setFilter?: string;
   currentPage: number;
   pageSize: number;
 }
@@ -50,12 +51,14 @@ interface CardFiltersProps {
   onSortChange: (value: string) => void;
   onColorFilterChange: (values: string[]) => void;
   onRarityFilterChange: (value: string) => void;
+  onSetFilterChange?: (value: string) => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (current: number, size: number) => void;
   onResetFilters: () => void;
   totalCards: number;
   showTopPagination?: boolean;
   sortOptions?: Array<{ value: string; label: string }>;
+  setOptions?: Array<{ value: string; label: string }>;
   searchPlaceholder?: string;
 }
 
@@ -65,6 +68,7 @@ const CardFilters: React.FC<CardFiltersProps> = ({
   onSortChange,
   onColorFilterChange,
   onRarityFilterChange,
+  onSetFilterChange,
   onPageChange,
   onPageSizeChange,
   onResetFilters,
@@ -81,6 +85,7 @@ const CardFilters: React.FC<CardFiltersProps> = ({
     { value: "price-low", label: "Price (Low to High)" },
     { value: "type", label: "Type" },
   ],
+  setOptions,
   searchPlaceholder = "Search cards...",
 }) => {
   const colorOptions = [
@@ -177,7 +182,11 @@ const CardFilters: React.FC<CardFiltersProps> = ({
       </Row>
 
       {/* Third Row: Rarity Filter */}
-      <Row gutter={[16, 8]} align="middle">
+      <Row
+        gutter={[16, 8]}
+        align="middle"
+        style={{ marginBottom: setOptions ? 12 : 0 }}
+      >
         <Col xs={24}>
           <div style={{ marginBottom: 8 }}>
             <strong>Filter by Rarity:</strong>
@@ -192,6 +201,36 @@ const CardFilters: React.FC<CardFiltersProps> = ({
           />
         </Col>
       </Row>
+
+      {/* Fourth Row: Set Filter (if setOptions provided) */}
+      {setOptions && onSetFilterChange && (
+        <Row gutter={[16, 8]} align="middle">
+          <Col xs={24}>
+            <div style={{ marginBottom: 8 }}>
+              <strong>Filter by Set:</strong>
+            </div>
+            <Select
+              placeholder="Select set"
+              value={filters.setFilter || "all"}
+              onChange={onSetFilterChange}
+              style={{ width: "100%", maxWidth: 400 }}
+              size="middle"
+              showSearch
+              filterOption={(input, option) =>
+                String(option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            >
+              {setOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+        </Row>
+      )}
     </ControlsContainer>
   );
 };

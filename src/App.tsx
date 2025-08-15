@@ -8,13 +8,13 @@ import {
 } from "react-router-dom";
 import { Layout, Menu } from "antd";
 import styled from "styled-components";
-import CardSearch from "./CardSearch";
-import ExpansionSets from "./ExpansionSets";
-import PopularCards from "./PopularCards";
-import LatestCards from "./LatestCards";
-import DeckList from "./DeckList";
-import DeckBuilder from "./DeckBuilder";
-import DeckView from "./DeckView";
+import CardSearch from "./pages/CardSearch";
+import ExpansionSets from "./pages/ExpansionSets";
+import PopularCards from "./pages/PopularCards";
+import LatestCards from "./pages/LatestCards";
+import DeckList from "./pages/DeckList";
+import DeckBuilder from "./pages/DeckBuilder";
+import DeckView from "./pages/DeckView";
 const { Header, Content } = Layout;
 
 const AppContainer = styled.div`

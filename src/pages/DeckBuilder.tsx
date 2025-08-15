@@ -27,15 +27,15 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { DeckService } from "./services/deckService";
+import { DeckService } from "../services/deckService";
 import {
   Deck,
   DeckCard as DeckCardType,
   DeckInsert,
   DeckCardInsert,
-} from "./lib/supabase";
-import ManaCostDisplay from "./components/ManaCostDisplay";
-import DeckCard from "./components/DeckCard";
+} from "../lib/supabase";
+import ManaCostDisplay from "../components/ManaCostDisplay";
+import DeckCard from "../components/DeckCard";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;

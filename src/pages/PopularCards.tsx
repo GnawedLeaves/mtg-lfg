@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { List, Spin, Typography, Tabs, Modal } from "antd";
 import styled from "styled-components";
-import CardFilters, { FilterState } from "./components/CardFilters";
-import CardDisplay, { MTGCard } from "./components/CardDisplay";
+import CardFilters, { FilterState } from "../components/CardFilters";
+import CardDisplay, { MTGCard } from "../components/CardDisplay";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;

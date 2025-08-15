@@ -26,9 +26,9 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { DeckService } from "./services/deckService";
-import { Deck } from "./lib/supabase";
-import ManaCostDisplay from "./components/ManaCostDisplay";
+import { DeckService } from "../services/deckService";
+import { Deck } from "../lib/supabase";
+import ManaCostDisplay from "../components/ManaCostDisplay";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;

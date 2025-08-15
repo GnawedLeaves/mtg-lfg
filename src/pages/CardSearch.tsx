@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Input, Button, List, Spin, Typography, Modal, Row, Col } from "antd";
 import styled from "styled-components";
-import CardDisplay from "./components/CardDisplay";
+import CardDisplay from "../components/CardDisplay";
 
 const { Title } = Typography;
 

@@ -23,10 +23,10 @@ import {
 } from "@ant-design/icons";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { DeckService } from "./services/deckService";
-import { Deck, DeckCard as DeckCardType } from "./lib/supabase";
-import ManaCostDisplay from "./components/ManaCostDisplay";
-import DeckCardComponent from "./components/DeckCard";
+import { DeckService } from "../services/deckService";
+import { Deck, DeckCard as DeckCardType } from "../lib/supabase";
+import ManaCostDisplay from "../components/ManaCostDisplay";
+import DeckCardComponent from "../components/DeckCard";
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;

@@ -11,6 +11,7 @@ import styled from "styled-components";
 import CardSearch from "./CardSearch";
 import ExpansionSets from "./ExpansionSets";
 import PopularCards from "./PopularCards";
+import LatestCards from "./LatestCards";
 const { Header, Content } = Layout;
 
 const AppContainer = styled.div`
@@ -25,6 +26,7 @@ function App() {
     if (currentPath === "/") return ["expansions"];
     if (currentPath === "/search") return ["search"];
     if (currentPath === "/popular") return ["popular"];
+    if (currentPath === "/latest") return ["latest"];
     if (currentPath === "/expansions") return ["expansions"];
     return ["expansions"];
   };
@@ -37,6 +39,9 @@ function App() {
             <Menu.Item key="expansions">
               <Link to="/">Expansion Sets</Link>
             </Menu.Item>
+            <Menu.Item key="latest">
+              <Link to="/latest">Latest Cards</Link>
+            </Menu.Item>
             <Menu.Item key="search">
               <Link to="/search">Card Search</Link>
             </Menu.Item>
@@ -48,6 +53,7 @@ function App() {
         <Content style={{ padding: "24px" }}>
           <Routes>
             <Route path="/" element={<ExpansionSets />} />
+            <Route path="/latest" element={<LatestCards />} />
             <Route path="/search" element={<CardSearch />} />
             <Route path="/popular" element={<PopularCards />} />
             <Route path="/expansions" element={<ExpansionSets />} />

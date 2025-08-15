@@ -6,35 +6,45 @@ import {
   Typography,
   Tabs,
   Button,
-  Input,
-  Pagination,
   Modal,
-  Select,
-  Row,
-  Col,
   Space,
-  Checkbox,
+  Pagination,
+  Input,
 } from "antd";
 import styled from "styled-components";
+import CardFilters, { FilterState } from "./components/CardFilters";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
 const { Search } = Input;
-const { Option } = Select;
-const { Group: CheckboxGroup } = Checkbox;
 
 const ExpansionContainer = styled.div`
   max-width: 1600px;
   margin: 0 auto;
-  padding: 12px;
+  padding: 8px;
+
+  @media (max-width: 768px) {
+    padding: 4px;
+  }
 `;
 
 const CardImage = styled.img`
   max-width: 150px;
+  width: 100%;
   height: auto;
   margin-bottom: 12px;
   cursor: pointer;
   transition: transform 0.2s;
+
+  @media (max-width: 768px) {
+    max-width: 180px;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 200px;
+    margin-bottom: 6px;
+  }
 
   &:hover {
     transform: scale(1.05);
@@ -48,11 +58,58 @@ const StyledCard = styled(Card)`
     display: flex;
     flex-direction: column;
     height: 100%;
+    padding: 16px;
+
+    @media (max-width: 768px) {
+      padding: 12px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 8px;
+    }
+  }
+
+  .ant-card-head {
+    @media (max-width: 480px) {
+      padding: 8px 12px;
+      min-height: 40px;
+    }
+  }
+
+  .ant-card-head-title {
+    @media (max-width: 480px) {
+      font-size: 14px;
+      line-height: 1.2;
+    }
   }
 `;
 
 const CardText = styled.div`
   margin-top: auto;
+
+  p {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+
+    @media (max-width: 768px) {
+      margin-bottom: 6px;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    @media (max-width: 480px) {
+      margin-bottom: 4px;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+  }
+
+  strong {
+    @media (max-width: 480px) {
+      font-size: 12px;
+    }
+  }
 `;
 
 const ExpandableText: React.FC<{ text: string; maxLength?: number }> = ({
@@ -90,6 +147,17 @@ const SetControlsContainer = styled.div`
   background: #fafafa;
   border-radius: 8px;
   border: 1px solid #d9d9d9;
+
+  @media (max-width: 768px) {
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 8px;
+    padding: 6px;
+  }
 `;
 
 const StyledTabs = styled(Tabs)`
@@ -118,6 +186,7 @@ interface MTGCard {
     usd?: string;
     eur?: string;
   };
+  released_at?: string;
 }
 
 interface MTGSet {
@@ -164,6 +233,9 @@ const ExpansionSets: React.FC = () => {
   }>({});
   const [colorFilters, setColorFilters] = useState<{
     [key: string]: string[];
+  }>({});
+  const [rarityFilters, setRarityFilters] = useState<{
+    [key: string]: string;
   }>({});
 
   const colorOptions = [
@@ -334,6 +406,18 @@ const ExpansionSets: React.FC = () => {
     }));
   };
 
+  const handleRarityFilterChange = (setCode: string, value: string) => {
+    setRarityFilters((prev) => ({
+      ...prev,
+      [setCode]: value,
+    }));
+    // Reset to first page when changing rarity filter
+    setCurrentPages((prev) => ({
+      ...prev,
+      [setCode]: 1,
+    }));
+  };
+
   const handleResetFilters = (setCode: string) => {
     // Reset search term
     setSetSearchTerms((prev) => ({
@@ -353,6 +437,12 @@ const ExpansionSets: React.FC = () => {
       [setCode]: [],
     }));
 
+    // Reset rarity filters
+    setRarityFilters((prev) => ({
+      ...prev,
+      [setCode]: "all",
+    }));
+
     // Reset to first page
     setCurrentPages((prev) => ({
       ...prev,
@@ -368,6 +458,7 @@ const ExpansionSets: React.FC = () => {
     const searchTerm = setSearchTerms[setCode] || "";
     const sortOption = sortOptions[setCode] || "name";
     const selectedColors = colorFilters[setCode] || [];
+    const selectedRarity = rarityFilters[setCode] || "all";
 
     // Filter cards based on search term
     if (searchTerm) {
@@ -387,24 +478,36 @@ const ExpansionSets: React.FC = () => {
           selectedColors.includes("C") &&
           (!card.mana_cost || card.mana_cost === "")
         ) {
-          return true;
+          // If colorless is selected and other colors too, card must be colorless AND have other colors (impossible)
+          // If only colorless is selected, show colorless cards
+          return selectedColors.length === 1;
         }
 
-        // For colored cards, check if any selected color is in the mana cost
-        if (card.mana_cost && selectedColors.some((color) => color !== "C")) {
-          return selectedColors.some((color) => {
-            if (color === "C") return false; // Skip colorless in this check
-            // Convert U back to U for blue, keep others as is
-            const manaSymbol = color === "U" ? "U" : color;
-            return (
-              card.mana_cost!.includes(`{${manaSymbol}}`) ||
-              card.mana_cost!.includes(manaSymbol)
-            );
-          });
+        // For colored cards, check if ALL selected colors are in the mana cost (AND logic)
+        if (card.mana_cost) {
+          const nonColorlessFilters = selectedColors.filter(
+            (color) => color !== "C"
+          );
+          if (nonColorlessFilters.length > 0) {
+            return nonColorlessFilters.every((color) => {
+              const manaSymbol = color === "U" ? "U" : color;
+              return (
+                card.mana_cost!.includes(`{${manaSymbol}}`) ||
+                card.mana_cost!.includes(manaSymbol)
+              );
+            });
+          }
         }
 
         return false;
       });
+    }
+
+    // Filter cards based on rarity selection
+    if (selectedRarity && selectedRarity !== "all") {
+      cards = cards.filter(
+        (card) => card.rarity?.toLowerCase() === selectedRarity.toLowerCase()
+      );
     }
 
     // Sort cards
@@ -414,6 +517,10 @@ const ExpansionSets: React.FC = () => {
           return a.name.localeCompare(b.name);
         case "name-desc":
           return b.name.localeCompare(a.name);
+        case "date-desc":
+          return (b.released_at || "").localeCompare(a.released_at || "");
+        case "date-asc":
+          return (a.released_at || "").localeCompare(b.released_at || "");
         case "rarity":
           const rarityOrder = { common: 1, uncommon: 2, rare: 3, mythic: 4 };
           return (
@@ -474,83 +581,51 @@ const ExpansionSets: React.FC = () => {
 
     return (
       <>
-        <SetControlsContainer>
-          <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
-            <Col xs={24} sm={12} md={8}>
-              <Search
-                placeholder="Search cards in this set..."
-                value={setSearchTerms[setCode] || ""}
-                onChange={(e) => handleSetSearch(setCode, e.target.value)}
-                allowClear
-              />
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Select
-                placeholder="Sort by"
-                value={sortOptions[setCode] || "name"}
-                onChange={(value) => handleSortChange(setCode, value)}
-                style={{ width: "100%" }}
-              >
-                <Option value="name">Name (A-Z)</Option>
-                <Option value="name-desc">Name (Z-A)</Option>
-                <Option value="rarity">Rarity (Common to Mythic)</Option>
-                <Option value="rarity-desc">Rarity (Mythic to Common)</Option>
-                <Option value="price-high">Price (High to Low)</Option>
-                <Option value="price-low">Price (Low to High)</Option>
-                <Option value="type">Type</Option>
-              </Select>
-            </Col>
-            <Col xs={24} sm={24} md={10}>
-              <Pagination
-                current={currentPage}
-                total={filteredCards.length}
-                pageSize={cardsPerPage}
-                onChange={(page) =>
-                  setCurrentPages((prev) => ({
-                    ...prev,
-                    [setCode]: page,
-                  }))
-                }
-                onShowSizeChange={(current, size) =>
-                  handlePageSizeChange(setCode, current, size)
-                }
-                showTotal={(total, range) =>
-                  `${range[0]}-${range[1]} of ${total} cards`
-                }
-                size="small"
-                showSizeChanger={true}
-                pageSizeOptions={["10", "20", "50", "100"]}
-              />
-            </Col>
-          </Row>
-          <Row gutter={16} align="middle">
-            <Col xs={24} md={18}>
-              <div style={{ marginBottom: 8 }}>
-                <strong>Filter by Colors:</strong>
-              </div>
-              <CheckboxGroup
-                options={colorOptions}
-                value={colorFilters[setCode] || []}
-                onChange={(checkedValues) =>
-                  handleColorFilterChange(setCode, checkedValues as string[])
-                }
-              />
-            </Col>
-            <Col xs={24} md={6}>
-              <Button
-                type="default"
-                onClick={() => handleResetFilters(setCode)}
-                style={{ width: "100%" }}
-              >
-                Reset All Filters
-              </Button>
-            </Col>
-          </Row>
-        </SetControlsContainer>
+        <CardFilters
+          filters={{
+            searchTerm: setSearchTerms[setCode] || "",
+            sortOption: sortOptions[setCode] || "name",
+            colorFilters: colorFilters[setCode] || [],
+            rarityFilter: rarityFilters[setCode] || "all",
+            currentPage: currentPage,
+            pageSize: cardsPerPage,
+          }}
+          onSearchChange={(value) => handleSetSearch(setCode, value)}
+          onSortChange={(value) => handleSortChange(setCode, value)}
+          onColorFilterChange={(checkedValues) =>
+            handleColorFilterChange(setCode, checkedValues)
+          }
+          onRarityFilterChange={(value) =>
+            handleRarityFilterChange(setCode, value)
+          }
+          onPageChange={(page: number) =>
+            setCurrentPages((prev) => ({
+              ...prev,
+              [setCode]: page,
+            }))
+          }
+          onPageSizeChange={(current: number, size: number) =>
+            handlePageSizeChange(setCode, current, size)
+          }
+          onResetFilters={() => handleResetFilters(setCode)}
+          totalCards={filteredCards.length}
+          searchPlaceholder="Search cards in this set..."
+          sortOptions={[
+            { value: "name", label: "Name (A-Z)" },
+            { value: "name-desc", label: "Name (Z-A)" },
+            { value: "date-desc", label: "Release Date (Newest First)" },
+            { value: "date-asc", label: "Release Date (Oldest First)" },
+            { value: "rarity", label: "Rarity (Common to Mythic)" },
+            { value: "rarity-desc", label: "Rarity (Mythic to Common)" },
+            { value: "price-high", label: "Price (High to Low)" },
+            { value: "price-low", label: "Price (Low to High)" },
+            { value: "type", label: "Type" },
+          ]}
+        />
 
         <List
           grid={{
-            gutter: 16,
+            gutter: [8, 12],
             xs: 1,
             sm: 2,
             md: 3,
@@ -619,7 +694,13 @@ const ExpansionSets: React.FC = () => {
           }
           showSizeChanger={true}
           pageSizeOptions={["10", "20", "50", "100"]}
-          style={{ marginTop: 24, textAlign: "center" }}
+          responsive={true}
+          showQuickJumper={false}
+          style={{
+            marginTop: 16,
+            textAlign: "center",
+            padding: "0 8px",
+          }}
         />
       </>
     );
@@ -645,7 +726,11 @@ const ExpansionSets: React.FC = () => {
           placeholder="Search for a set..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: 300, marginBottom: 16 }}
+          style={{
+            width: "100%",
+            maxWidth: 300,
+            marginBottom: 16,
+          }}
         />
       </SetContainer>
 

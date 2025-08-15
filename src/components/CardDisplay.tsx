@@ -4,7 +4,7 @@ import styled from "styled-components";
 import ManaCostDisplay from "./ManaCostDisplay";
 
 const CardImage = styled.img`
-  max-width: 200px;
+  max-width: 300px;
   width: 100%;
   height: auto;
   margin-bottom: 12px;
@@ -17,7 +17,7 @@ const CardImage = styled.img`
   }
 
   @media (max-width: 480px) {
-    max-width: 240px;
+    max-width: 300px;
     margin-bottom: 6px;
   }
 

@@ -22,7 +22,7 @@ const LatestCards: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("date-desc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(50);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
     url: string;
@@ -348,7 +348,7 @@ const LatestCards: React.FC = () => {
       />
 
       <Modal
-        title={selectedImage?.name}
+        // title={selectedImage?.name}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}

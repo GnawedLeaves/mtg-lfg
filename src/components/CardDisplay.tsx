@@ -64,7 +64,7 @@ const CardText = styled.div`
   margin-top: auto;
 
   p {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-size: 14px;
     line-height: 1.4;
 
@@ -160,13 +160,13 @@ const CardDisplay: React.FC<CardDisplayProps> = ({
             <strong>Set:</strong> {card.set_name}
           </p>
         )}
-        <p>
+        {/* <p>
           <strong>Type:</strong> {card.type_line}
-        </p>
-        <p>
+        </p> */}
+        {/* <p>
           <strong>Mana Cost:</strong>{" "}
           <ManaCostDisplay manaCost={card.mana_cost || ""} />
-        </p>
+        </p> */}
         <p>
           <strong>Rarity:</strong> {card.rarity}
         </p>
@@ -176,12 +176,12 @@ const CardDisplay: React.FC<CardDisplayProps> = ({
             {new Date(card.released_at).toLocaleDateString()}
           </p>
         )}
-        {card.oracle_text && (
+        {/* {card.oracle_text && (
           <p>
             <strong>Text:</strong>{" "}
             <ExpandableText text={card.oracle_text} maxLength={80} />
           </p>
-        )}
+        )} */}
         {card.prices && (card.prices.usd || card.prices.eur) && (
           <p>
             <strong>Price:</strong> {card.prices.usd && `$${card.prices.usd}`}

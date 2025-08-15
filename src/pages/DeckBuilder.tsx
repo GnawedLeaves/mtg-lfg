@@ -67,7 +67,7 @@ const DeckBuilderContainer = styled.div`
 
 const CardSearchModal = styled(Modal)`
   .ant-modal-body {
-    max-height: 60vh;
+    max-height: 80vh;
     overflow-y: auto;
   }
 `;
@@ -443,7 +443,7 @@ const DeckBuilder: React.FC = () => {
         open={searchModalVisible}
         onCancel={() => setSearchModalVisible(false)}
         footer={null}
-        width={800}
+        width={1000}
       >
         <Input.Search
           placeholder="Search for cards..."
@@ -456,22 +456,31 @@ const DeckBuilder: React.FC = () => {
         {cardSearchLoading ? (
           <Spin style={{ display: "block", textAlign: "center", margin: 20 }} />
         ) : (
-          <Row gutter={[8, 8]} style={{ maxHeight: 400, overflowY: "auto" }}>
+          <Row gutter={[12, 12]} style={{ maxHeight: 600, overflowY: "auto" }}>
             {searchResults.map((card) => (
-              <Col xs={24} sm={12} md={8} key={card.id}>
+              <Col xs={24} sm={12} md={8} lg={6} key={card.id}>
                 <Card
                   size="small"
                   cover={
                     card.image_uris?.small && (
-                      <img
+                      <Image
                         src={card.image_uris.small}
                         alt={card.name}
-                        style={{ height: 200, objectFit: "cover" }}
+                        style={{
+                          height: 300,
+                          width: "100%",
+                          objectFit: "contain",
+                          backgroundColor: "#f5f5f5",
+                        }}
+                        preview={{
+                          src: card.image_uris.normal || card.image_uris.small,
+                        }}
                       />
                     )
                   }
                   actions={[
                     <Button
+                      key="add"
                       type="primary"
                       size="small"
                       onClick={() => addCardToDeck(card)}

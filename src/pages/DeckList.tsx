@@ -41,6 +41,7 @@ const DecksContainer = styled.div`
 `;
 
 const DeckCard = styled(Card)`
+  width: 300px;
   height: 100%;
   transition: all 0.3s ease;
 
@@ -53,6 +54,20 @@ const DeckCard = styled(Card)`
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+
+  .ant-card-actions {
+    padding: 4px 8px;
+  }
+
+  .ant-card-actions > li {
+    margin: 0 2px;
+  }
+
+  .ant-card-actions .ant-btn {
+    font-size: 11px;
+    padding: 2px 6px;
+    height: auto;
   }
 `;
 
@@ -319,37 +334,45 @@ const DeckList: React.FC = () => {
           )}
         </Empty>
       ) : (
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} align={"middle"}>
           {filteredDecks.map((deck) => (
             <Col xs={24} sm={12} md={8} lg={6} key={deck.id}>
               <DeckCard
                 actions={[
                   <Button
+                    key="view"
                     type="text"
                     icon={<EyeOutlined />}
                     onClick={() => navigate(`/decks/${deck.id}`)}
+                    size="small"
                   >
                     View
                   </Button>,
                   <Button
+                    key="edit"
                     type="text"
                     icon={<EditOutlined />}
                     onClick={() => navigate(`/decks/${deck.id}/edit`)}
+                    size="small"
                   >
                     Edit
                   </Button>,
                   <Button
+                    key="copy"
                     type="text"
                     icon={<CopyOutlined />}
                     onClick={() => handleDuplicateDeck(deck)}
+                    size="small"
                   >
                     Copy
                   </Button>,
                   <Button
+                    key="delete"
                     type="text"
                     icon={<DeleteOutlined />}
                     danger
                     onClick={() => handleDeleteDeck(deck)}
+                    size="small"
                   >
                     Delete
                   </Button>,

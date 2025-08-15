@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { List, Spin, Typography, Tabs, Modal } from "antd";
 import styled from "styled-components";
 import CardFilters, { FilterState } from "./components/CardFilters";
@@ -36,10 +36,6 @@ const PopularCards: React.FC = () => {
     url: string;
     name: string;
   } | null>(null);
-
-  useEffect(() => {
-    loadPopularCards();
-  }, []);
 
   // Filter handlers
   const handleImageClick = (src: string, alt: string) => {
@@ -95,7 +91,7 @@ const PopularCards: React.FC = () => {
     }
   };
 
-  const loadPopularCards = async () => {
+  const loadPopularCards = useCallback(async () => {
     setLoading(true);
     try {
       // Load popular planeswalkers (more cards for better filtering)
@@ -113,7 +109,11 @@ const PopularCards: React.FC = () => {
       console.error("Error loading popular cards:", error);
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    loadPopularCards();
+  }, [loadPopularCards]);
 
   // Get current active cards based on selected tab
   const getCurrentCards = (): MTGCard[] => {

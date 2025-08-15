@@ -160,8 +160,9 @@ const CardFilters: React.FC<CardFiltersProps> = ({
     { label: "Mythic", value: "mythic" },
   ];
 
-  const startIndex = (filters.currentPage - 1) * filters.pageSize + 1;
-  const endIndex = Math.min(filters.currentPage * filters.pageSize, totalCards);
+  // Remove unused variables startIndex and endIndex
+  // const startIndex = (filters.currentPage - 1) * filters.pageSize + 1;
+  // const endIndex = Math.min(filters.currentPage * filters.pageSize, totalCards);
 
   return (
     <ControlsContainer>

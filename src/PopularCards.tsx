@@ -47,9 +47,11 @@ const PopularCards: React.FC = () => {
 
   const fetchCards = async (query: string): Promise<MTGCard[]> => {
     try {
-      const response = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `https://api.scryfall.com/cards/search?q=${encodeURIComponent(query)}`
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch cards');
+        throw new Error("Failed to fetch cards");
       }
       const data = await response.json();
       return data.data || [];
@@ -63,15 +65,15 @@ const PopularCards: React.FC = () => {
     setLoading(true);
     try {
       // Load popular planeswalkers
-      const planeswalkerCards = await fetchCards('type:planeswalker');
+      const planeswalkerCards = await fetchCards("type:planeswalker");
       setPlaneswalkers(planeswalkerCards.slice(0, 12));
 
       // Load Lord of the Rings cards (LTR set)
-      const lotrSet = await fetchCards('set:ltr');
+      const lotrSet = await fetchCards("set:ltr");
       setLotrCards(lotrSet.slice(0, 20));
 
       // Load legendary creatures
-      const legendary = await fetchCards('type:legendary type:creature');
+      const legendary = await fetchCards("type:legendary type:creature");
       setLegendaryCreatures(legendary.slice(0, 12));
     } catch (error) {
       console.error("Error loading popular cards:", error);
@@ -86,7 +88,9 @@ const PopularCards: React.FC = () => {
       renderItem={(card) => (
         <List.Item>
           <Card title={card.name} size="small" style={{ height: "100%" }}>
-            {card.image_uris?.normal && <CardImage src={card.image_uris.normal} alt={card.name} />}
+            {card.image_uris?.normal && (
+              <CardImage src={card.image_uris.normal} alt={card.name} />
+            )}
             <p>
               <strong>Type:</strong> {card.type_line}
             </p>

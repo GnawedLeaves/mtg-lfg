@@ -43,13 +43,15 @@ const CardSearch: React.FC = () => {
 
   const handleSearch = async () => {
     if (!search.trim()) return;
-    
+
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(search)}`);
+      const response = await fetch(
+        `https://api.scryfall.com/cards/search?q=${encodeURIComponent(search)}`
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch cards');
+        throw new Error("Failed to fetch cards");
       }
       const data = await response.json();
       setResults(data.data || []);

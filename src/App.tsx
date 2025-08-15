@@ -9,8 +9,8 @@ import {
 import { Layout, Menu } from "antd";
 import styled from "styled-components";
 import CardSearch from "./CardSearch";
-import PopularCards from "./PopularCards";
 import ExpansionSets from "./ExpansionSets";
+import PopularCards from "./PopularCards";
 const { Header, Content } = Layout;
 
 const AppContainer = styled.div`
@@ -22,10 +22,11 @@ function App() {
   const currentPath = location.pathname;
 
   const getSelectedKey = () => {
-    if (currentPath === "/") return ["search"];
+    if (currentPath === "/") return ["expansions"];
+    if (currentPath === "/search") return ["search"];
     if (currentPath === "/popular") return ["popular"];
     if (currentPath === "/expansions") return ["expansions"];
-    return ["search"];
+    return ["expansions"];
   };
 
   return (
@@ -33,20 +34,21 @@ function App() {
       <Layout>
         <Header>
           <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKey()}>
+            <Menu.Item key="expansions">
+              <Link to="/">Expansion Sets</Link>
+            </Menu.Item>
             <Menu.Item key="search">
-              <Link to="/">Card Search</Link>
+              <Link to="/search">Card Search</Link>
             </Menu.Item>
             <Menu.Item key="popular">
               <Link to="/popular">Popular Cards</Link>
-            </Menu.Item>
-            <Menu.Item key="expansions">
-              <Link to="/expansions">Expansion Sets</Link>
             </Menu.Item>
           </Menu>
         </Header>
         <Content style={{ padding: "24px" }}>
           <Routes>
-            <Route path="/" element={<CardSearch />} />
+            <Route path="/" element={<ExpansionSets />} />
+            <Route path="/search" element={<CardSearch />} />
             <Route path="/popular" element={<PopularCards />} />
             <Route path="/expansions" element={<ExpansionSets />} />
           </Routes>

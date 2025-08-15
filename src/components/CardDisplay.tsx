@@ -182,11 +182,15 @@ const CardDisplay: React.FC<CardDisplayProps> = ({
             <ExpandableText text={card.oracle_text} maxLength={80} />
           </p>
         )} */}
-        {card.prices && (card.prices.usd || card.prices.eur) && (
+        {card.prices && (card.prices.usd || card.prices.eur) ? (
           <p>
             <strong>Price:</strong> {card.prices.usd && `$${card.prices.usd}`}
             {card.prices.usd && card.prices.eur && " / "}
             {card.prices.eur && `€${card.prices.eur}`}
+          </p>
+        ) : (
+          <p>
+            <strong>Price: -</strong>
           </p>
         )}
       </CardText>

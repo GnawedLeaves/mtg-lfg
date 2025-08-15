@@ -10,11 +10,18 @@ import {
   Col,
 } from "antd";
 import styled from "styled-components";
+import ManaCostDisplay from "./ManaCostDisplay";
 
 const { Search } = Input;
 const { Option } = Select;
 const { Group: CheckboxGroup } = Checkbox;
 const { Group: RadioGroup } = Radio;
+
+const ColorFilterLabel = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+`;
 
 const ControlsContainer = styled.div`
   margin-bottom: 16px;
@@ -89,12 +96,60 @@ const CardFilters: React.FC<CardFiltersProps> = ({
   searchPlaceholder = "Search cards...",
 }) => {
   const colorOptions = [
-    { label: "⚪ White", value: "W" },
-    { label: "🔵 Blue", value: "U" },
-    { label: "⚫ Black", value: "B" },
-    { label: "🔴 Red", value: "R" },
-    { label: "🟢 Green", value: "G" },
-    { label: "◇ Colorless", value: "C" },
+    {
+      label: (
+        <ColorFilterLabel>
+          <ManaCostDisplay manaCost="{W}" size="small" />
+          White
+        </ColorFilterLabel>
+      ),
+      value: "W",
+    },
+    {
+      label: (
+        <ColorFilterLabel>
+          <ManaCostDisplay manaCost="{U}" size="small" />
+          Blue
+        </ColorFilterLabel>
+      ),
+      value: "U",
+    },
+    {
+      label: (
+        <ColorFilterLabel>
+          <ManaCostDisplay manaCost="{B}" size="small" />
+          Black
+        </ColorFilterLabel>
+      ),
+      value: "B",
+    },
+    {
+      label: (
+        <ColorFilterLabel>
+          <ManaCostDisplay manaCost="{R}" size="small" />
+          Red
+        </ColorFilterLabel>
+      ),
+      value: "R",
+    },
+    {
+      label: (
+        <ColorFilterLabel>
+          <ManaCostDisplay manaCost="{G}" size="small" />
+          Green
+        </ColorFilterLabel>
+      ),
+      value: "G",
+    },
+    {
+      label: (
+        <ColorFilterLabel>
+          <ManaCostDisplay manaCost="{C}" size="small" />
+          Colorless
+        </ColorFilterLabel>
+      ),
+      value: "C",
+    },
   ];
 
   const rarityOptions = [

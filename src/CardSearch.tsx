@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-import { Input, Button, List, Card, Spin, Typography } from "antd";
+import { Input, Button, List, Spin, Typography, Modal, Row, Col } from "antd";
 import styled from "styled-components";
+import CardDisplay from "./components/CardDisplay";
 
 const { Title } = Typography;
 
 const SearchContainer = styled.div`
-  max-width: 600px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
-`;
-
-const CardImage = styled.img`
-  max-width: 200px;
-  height: auto;
-  margin-bottom: 12px;
 `;
 
 interface MTGCard {
@@ -28,6 +23,7 @@ interface MTGCard {
   mana_cost?: string;
   rarity?: string;
   oracle_text?: string;
+  released_at?: string;
   prices?: {
     usd?: string;
     usd_foil?: string;
@@ -40,6 +36,16 @@ const CardSearch: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<MTGCard[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
+
+  const handleImageClick = (imageUrl: string, cardName: string) => {
+    setSelectedImage({ url: imageUrl, name: cardName });
+    setModalVisible(true);
+  };
 
   const handleSearch = async () => {
     if (!search.trim()) return;
@@ -79,43 +85,49 @@ const CardSearch: React.FC = () => {
       </Input.Group>
       {loading && <Spin style={{ marginTop: 24 }} />}
       {error && <Typography.Text type="danger">{error}</Typography.Text>}
-      <List
-        style={{ marginTop: 24 }}
-        grid={{ gutter: 16, column: 1 }}
-        dataSource={results}
-        renderItem={(card) => (
-          <List.Item>
-            <Card title={card.name}>
-              {card.image_uris?.normal && (
-                <CardImage src={card.image_uris.normal} alt={card.name} />
-              )}
-              <p>
-                <strong>Type:</strong> {card.type_line}
-              </p>
-              <p>
-                <strong>Set:</strong> {card.set_name}
-              </p>
-              <p>
-                <strong>Mana Cost:</strong> {card.mana_cost}
-              </p>
-              <p>
-                <strong>Rarity:</strong> {card.rarity}
-              </p>
-              <p>
-                <strong>Text:</strong> {card.oracle_text}
-              </p>
-              {card.prices && (card.prices.usd || card.prices.eur) && (
-                <p>
-                  <strong>Price:</strong>{" "}
-                  {card.prices.usd && `$${card.prices.usd}`}
-                  {card.prices.usd && card.prices.eur && " / "}
-                  {card.prices.eur && `€${card.prices.eur}`}
-                </p>
-              )}
-            </Card>
-          </List.Item>
+
+      {results.length > 0 && (
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          {results.map((card) => (
+            <Col xs={24} sm={12} md={8} lg={6} key={card.id}>
+              <CardDisplay
+                card={card}
+                onImageClick={handleImageClick}
+                showSet={true}
+                showReleaseDate={false}
+              />
+            </Col>
+          ))}
+        </Row>
+      )}
+
+      <Modal
+        title={selectedImage?.name}
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+        width="auto"
+        centered
+        styles={{
+          body: {
+            padding: 0,
+            display: "flex",
+            justifyContent: "center",
+          },
+        }}
+      >
+        {selectedImage && (
+          <img
+            src={selectedImage.url}
+            alt={selectedImage.name}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "80vh",
+              objectFit: "contain",
+            }}
+          />
         )}
-      />
+      </Modal>
     </SearchContainer>
   );
 };

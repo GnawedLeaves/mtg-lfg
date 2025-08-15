@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, Button } from "antd";
 import styled from "styled-components";
+import ManaCostDisplay from "./ManaCostDisplay";
 
 const CardImage = styled.img`
   max-width: 200px;
@@ -163,7 +164,8 @@ const CardDisplay: React.FC<CardDisplayProps> = ({
           <strong>Type:</strong> {card.type_line}
         </p>
         <p>
-          <strong>Mana Cost:</strong> {card.mana_cost || "-"}
+          <strong>Mana Cost:</strong>{" "}
+          <ManaCostDisplay manaCost={card.mana_cost || ""} />
         </p>
         <p>
           <strong>Rarity:</strong> {card.rarity}
